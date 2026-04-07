@@ -24,12 +24,13 @@ app = FastAPI(
     description="A scalable nutrition coaching backend with food logging, weekly plans, restaurants, nudges, analytics, and AI advice.",
 )
 
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+frontend_origins = [origin.strip() for origin in os.getenv("FRONTEND_URL", "").split(",") if origin.strip()]
+allow_all_origins = not frontend_origins
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_url],
-    allow_credentials=True,
+    allow_origins=frontend_origins or ["*"],
+    allow_credentials=not allow_all_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
